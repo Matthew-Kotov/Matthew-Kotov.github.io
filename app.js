@@ -11,8 +11,8 @@ class ApartmentFilterApp {
             bufferZone: null
         };
         this.layerVisibility = {
-            schools: true,
-            kindergartens: true,
+            schools: false,
+            kindergartens: false,
             priceLabels: true
         };
         this.filteredApartments = [];
@@ -35,7 +35,11 @@ class ApartmentFilterApp {
     
     initMap() {
         // Инициализация карты
-        this.map = L.map('map').setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM);
+        this.map = L.map('map', {
+            minZoom: 10,
+            maxZoom: 18,
+            zoomControle: true
+        }).setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM);
         
         // Добавление базового слоя (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -820,4 +824,5 @@ class ApartmentFilterApp {
 // Инициализация приложения после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
+
 });
