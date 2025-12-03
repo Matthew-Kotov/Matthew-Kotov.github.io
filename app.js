@@ -31,7 +31,7 @@ class ApartmentFilterApp {
         this.initLayers();
         this.initEventListeners();
         this.initPriceLabels();
-        this.applyDefaultLayerVisibility();
+        // this.applyDefaultLayerVisibility();
     }
     
     initMap() {
@@ -850,5 +850,6 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
