@@ -37,8 +37,8 @@ class ApartmentFilterApp {
     initMap() {
         // Инициализация карты
         this.map = L.map('map', {
-            minZoom: 12,
-            maxZoom: 20,
+            minZoom: 10,
+            maxZoom: 18,
             zoomControle: true
             // maxBounds: cityBounds, // Ограничиваем перемещение границами
             // maxBoundsViscosity: 1.0 // Насколько жестко ограничивать (0.0 - 1.0)
@@ -850,6 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
