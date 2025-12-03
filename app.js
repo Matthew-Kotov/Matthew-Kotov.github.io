@@ -712,13 +712,26 @@ class ApartmentFilterApp {
     
     // Применение фильтра по близости к объектам
     applyObjectFilter(objectType) {
-        const objectLayer = objectType === 'schools' ? this.layers.schools : this.layers.kindergartens;
-        if (!objectLayer) return;
-        
-        this.filteredApartments = this.filteredApartments.filter(apartment => {
-            const apartmentPoint = apartment.geometry.coordinates;
-            return this.isNearObjects(apartmentPoint, objectLayer, this.bufferRadius);
-        });
+        if (objectType === 'schools' || objectType === 'kindergartens') {
+            const objectLayer = objectType === 'schools' ? this.layers.schools : this.layers.kindergartens;
+            if (!objectLayer) return;
+            
+            this.filteredApartments = this.filteredApartments.filter(apartment => {
+                const apartmentPoint = apartment.geometry.coordinates;
+                return this.isNearObjects(apartmentPoint, objectLayer, this.bufferRadius);
+            });
+        }
+        else if (objectType === 'both') {
+            if (!this.layers.schools && !this.layers.kindergartens) return;
+            this.filteredApartments = this.filteredApartments.filter(apartment => {
+                const apartmentPoint = apartment.geometry.coordinates;
+                const isNearSchool = this.layers.schools ? 
+                    this.isNearObjects(apartmentPoint, this.layers.schools, this.bufferRadius) : false;
+                const isNearKindergarten = this.layers.kindergartens ? 
+                    this.isNearObjects(apartmentPoint, this.layers.kindergartens, this.bufferRadius) : false;
+                return isNearSchool && isNearKindergarten;
+            });
+        }
     }
     
     // Проверка нахождения точки в радиусе
@@ -740,7 +753,7 @@ class ApartmentFilterApp {
             const distance = apartmentLatLng.distanceTo(layer.getLatLng());
             if (distance <= radius) {
                 isNear = true;
-                return; // break
+                return false;
             }
         });
         
@@ -826,3 +839,4 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
