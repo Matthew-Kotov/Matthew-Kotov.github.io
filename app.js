@@ -42,7 +42,7 @@ class ApartmentFilterApp {
             zoomControle: true,
             maxBounds: cityBounds, // Ограничиваем перемещение границами
             maxBoundsViscosity: 1.0 // Насколько жестко ограничивать (0.0 - 1.0)
-        }).setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM);
+        }).setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM, CONFIG.CITY_BOUNDS);
         
         // Добавление базового слоя (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -850,6 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
