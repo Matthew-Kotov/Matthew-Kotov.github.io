@@ -432,7 +432,7 @@ class ApartmentFilterApp {
                         </div>
                     `);
                 }
-            }).addTo(this.map);
+            });
             
         } catch (error) {
             console.error('Ошибка загрузки слоя школ:', error);
@@ -480,7 +480,7 @@ class ApartmentFilterApp {
                         </div>
                     `);
                 }
-            }).addTo(this.map);
+            });
             
         } catch (error) {
             console.error('Ошибка загрузки слоя детских садов:', error);
@@ -849,6 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
