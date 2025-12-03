@@ -3,10 +3,10 @@ const CONFIG = {
     // Настройки NextGIS Web
     NGW_URL: 'https://apartmentfilter.nextgis.com',
     LAYER_IDS: {
-        SALE: 58,           // modified_data (продажа)
-        RENT: 54,           // modified_data_rent (аренда)
-        SCHOOLS: 56,        // Школы csv
-        KINDERGARTENS: 60,  // Детские сады csv
+        SALE: 5,           // modified_data (продажа) 58
+        RENT: 7,           // modified_data_rent (аренда) 54
+        SCHOOLS: 3,        // Школы csv 56
+        KINDERGARTENS: 9,  // Детские сады csv 60
         BASEMAP: 19        // OpenStreetMap
     },
     
@@ -29,4 +29,5 @@ const CONFIG = {
     }
 
 };
+
 
