@@ -35,6 +35,12 @@ class ApartmentFilterApp {
     }
     
     initMap() {
+        // Создаем границы города
+        const cityBounds = L.latLngBounds(
+            CONFIG.CITY_BOUNDS.southWest, // юго-западный угол
+            CONFIG.CITY_BOUNDS.northEast  // северо-восточный угол
+        );
+        
         // Инициализация карты
         this.map = L.map('map', {
             minZoom: 12,
@@ -42,20 +48,14 @@ class ApartmentFilterApp {
             zoomControle: true,
             maxBounds: cityBounds, // Ограничиваем перемещение границами
             maxBoundsViscosity: 1.0 // Насколько жестко ограничивать (0.0 - 1.0)
-        }).setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM, CONFIG.CITY_BOUNDS);
+        }).setView(CONFIG.MAP_CENTER, CONFIG.MAP_ZOOM);
+
+        this.map.setMaxBounds(cityBounds);
         
         // Добавление базового слоя (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(this.map);
-
-        // Создаем границы города
-        const cityBounds = L.latLngBounds(
-             CONFIG.CITY_BOUNDS.southWest, // юго-западный угол
-            CONFIG.CITY_BOUNDS.northEast  // северо-восточный угол
-        );
-
-        this.map.setMaxBounds(cityBounds);
         
         // Следим за изменением масштаба для обновления цен
         this.map.on('zoomend', () => {
@@ -850,6 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
