@@ -2,6 +2,7 @@
 class ApartmentFilterApp {
     constructor() {
         this.map = null;
+        this.ngwApi = ngwApi; // Добавляем экземпляр API
         this.layers = {
             apartments: null,
             schools: null,
@@ -849,6 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
