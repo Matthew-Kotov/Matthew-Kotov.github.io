@@ -84,6 +84,14 @@ class ApartmentFilterApp {
         this.priceLabelsLayer = L.layerGroup().addTo(this.map);
         this.updatePriceLabels();
     }
+
+    showLoading() {
+        document.getElementById('loading-indicator').style.display = 'flex';
+    }
+    
+    hideLoading() {
+        document.getElementById('loading-indicator').style.display = 'none';
+    }
     
     // Установка кастомной точки
     setCustomPoint(latlng) {
@@ -284,6 +292,7 @@ class ApartmentFilterApp {
     }
     
     async loadApartmentLayer(dealType) {
+        this.showLoading();
         const layerId = dealType === 'sale' ? CONFIG.LAYER_IDS.SALE : CONFIG.LAYER_IDS.RENT;
         const style = dealType === 'sale' ? CONFIG.STYLES.SALE : CONFIG.STYLES.RENT;
         
@@ -340,7 +349,7 @@ class ApartmentFilterApp {
             
         } catch (error) {
             console.error('Ошибка загрузки слоя квартир из NGW:', error);
-            
+            this.hideLoading();
             // Fallback: пробуем загрузить локальные данные
             console.log('Пробуем загрузить локальные данные...');
             await this.loadLocalApartmentLayer(dealType);
@@ -922,6 +931,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
