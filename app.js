@@ -284,26 +284,27 @@ class ApartmentFilterApp {
     }
     
     async loadApartmentLayer(dealType) {
-        const fileName = dealType === 'sale' ? 'sale.geojson' : 'rent.geojson';
+        const layerId = dealType === 'sale' ? CONFIG.LAYER_IDS.SALE : CONFIG.LAYER_IDS.RENT;
         const style = dealType === 'sale' ? CONFIG.STYLES.SALE : CONFIG.STYLES.RENT;
         
         try {
-            // Удаляем старый слой квартир
+            // Проверяем подключение к NGW
+            const isConnected = await this.ngwApi.checkConnection();
+            if (!isConnected) {
+                throw new Error('NGW недоступен. Используем локальные данные.');
+            }
+            
+            // Удаляем старый слой
             if (this.layers.apartments) {
                 this.map.removeLayer(this.layers.apartments);
             }
             
-            const response = await fetch(`data/${fileName}`);
-            console.log('Статус загрузки квартир:', response.status);
+            // Загружаем данные из NGW
+            const geojson = await this.ngwApi.getLayerGeoJSON(layerId);
+            console.log('Данные квартир получены из NGW, количество объектов:', 
+                       geojson.features ? geojson.features.length : 'нет features');
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const geojson = await response.json();
-            console.log('Данные квартир получены, количество объектов:', geojson.features ? geojson.features.length : 'нет features');
-            
-            // Используем координаты из свойств вместо геометрии
+            // Используем координаты из свойств (если нужно)
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'apartments');
             
             this.allApartments = transformedGeojson.features || [];
@@ -332,17 +333,30 @@ class ApartmentFilterApp {
             this.updateResultsCount();
             this.updatePriceLabels();
             
-            // Автоматически подстраиваем карту под данные
+            // Подстраиваем карту
             if (this.layers.apartments.getBounds().isValid()) {
                 this.map.fitBounds(this.layers.apartments.getBounds());
-                console.log('Карта подстроена под данные квартир');
-            } else {
-                console.log('Невозможно подстроить карту - невалидные границы данных квартир');
             }
             
         } catch (error) {
-            console.error('Ошибка загрузки слоя квартир:', error);
-            alert(`Ошибка загрузки данных квартир: ${error.message}`);
+            console.error('Ошибка загрузки слоя квартир из NGW:', error);
+            
+            // Fallback: пробуем загрузить локальные данные
+            console.log('Пробуем загрузить локальные данные...');
+            await this.loadLocalApartmentLayer(dealType);
+        }
+    }
+    
+    // Метод для загрузки локальных данных (как fallback)
+    async loadLocalApartmentLayer(dealType) {
+        const fileName = dealType === 'sale' ? 'sale.geojson' : 'rent.geojson';
+        try {
+            const response = await fetch(`data/${fileName}`);
+            const geojson = await response.json();
+            // ... существующий код загрузки локальных данных
+        } catch (localError) {
+            console.error('Ошибка загрузки локальных данных:', localError);
+            alert('Не удалось загрузить данные. Проверьте подключение к интернету.');
         }
     }
     
@@ -393,17 +407,15 @@ class ApartmentFilterApp {
     
     async loadSchoolsLayer() {
         try {
-            const response = await fetch('data/schools.geojson');
-            console.log('Статус загрузки школ:', response.status);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const isConnected = await this.ngwApi.checkConnection();
+            if (!isConnected) {
+                await this.loadLocalSchoolsLayer();
+                return;
             }
             
-            const geojson = await response.json();
-            console.log('Данные школ получены, количество:', geojson.features ? geojson.features.length : 0);
+            const geojson = await this.ngwApi.getLayerGeoJSON(CONFIG.LAYER_IDS.SCHOOLS);
             
-            // Для школ используем координаты из свойств (X, Y)
+            // Для школ используем координаты из свойств
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'schools');
             
             this.layers.schools = L.geoJSON(transformedGeojson, {
@@ -442,17 +454,15 @@ class ApartmentFilterApp {
     
     async loadKindergartensLayer() {
         try {
-            const response = await fetch('data/kindergartens.geojson');
-            console.log('Статус загрузки детских садов:', response.status);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const isConnected = await this.ngwApi.checkConnection();
+            if (!isConnected) {
+                await this.loadLocalKindergartensLayer();
+                return;
             }
             
-            const geojson = await response.json();
-            console.log('Данные детских садов получены, количество:', geojson.features ? geojson.features.length : 0);
+            const geojson = await this.ngwApi.getLayerGeoJSON(CONFIG.LAYER_IDS.KINDERGARTENS);
             
-            // Для детских садов используем координаты из свойств (X, Y)
+            // Для школ используем координаты из свойств
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'kindergartens');
             
             this.layers.kindergartens = L.geoJSON(transformedGeojson, {
@@ -679,7 +689,69 @@ class ApartmentFilterApp {
             district
         };
     }
+
+    async applyFiltersWithNGW() {
+        const filters = this.getCurrentFilters();
+        const dealType = filters.dealType;
+        const layerId = dealType === 'sale' ? CONFIG.LAYER_IDS.SALE : CONFIG.LAYER_IDS.RENT;
+        
+        try {
+            // Формируем фильтры для NGW API
+            const ngwFilters = this.buildNGWFilterQuery(filters);
+            
+            // Загружаем отфильтрованные данные
+            const geojson = await this.ngwApi.getLayerGeoJSON(layerId, ngwFilters);
+            this.filteredApartments = geojson.features || [];
+            
+            // Применяем дополнительные фильтры (радиус, объекты)
+            if (this.customPoint) {
+                this.applyRadiusFilter();
+            } else {
+                const objectType = document.getElementById('object-type').value;
+                if (objectType !== 'none') {
+                    this.applyObjectFilter(objectType);
+                }
+            }
+            
+            this.updateMap();
+            this.updateResultsCount();
+            this.updatePriceLabels();
+            
+        } catch (error) {
+            console.error('Ошибка применения фильтров через NGW:', error);
+            // Fallback: применяем фильтры локально
+            this.applyFiltersLocally();
+        }
+    }
     
+    // Метод для построения query-параметров фильтрации NGW
+    buildNGWFilterQuery(filters) {
+        const query = {};
+        
+        // Фильтр по цене
+        if (filters.priceMax) {
+            const field = filters.dealType === 'sale' ? 'price' : 'price_per_month';
+            query[field + '__le'] = filters.priceMax;
+        }
+        
+        // Фильтр по площади
+        if (filters.areaMin) {
+            query['total_meters__ge'] = filters.areaMin;
+        }
+        
+        // Фильтр по району
+        if (filters.district) {
+            query['district'] = filters.district;
+        }
+        
+        // Фильтр по комнатам (если выбрана одна опция)
+        if (filters.selectedRooms.length === 1) {
+            query['rooms_count'] = filters.selectedRooms[0];
+        }
+        
+        return query;
+    }
+        
     filterApartments(filters) {
         this.filteredApartments = this.allApartments.filter(apartment => {
             const props = apartment.properties;
@@ -850,6 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 
 });
+
 
 
 
