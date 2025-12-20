@@ -3,18 +3,11 @@ const CONFIG = {
     // Настройки NextGIS Web
     NGW_URL: 'https://apartmentfilter.nextgis.com',
     LAYER_IDS: {
-        SALE: 58,           // modified_data (продажа) 58
-        RENT: 54,           // modified_data_rent (аренда) 54
-        SCHOOLS: 56,        // Школы csv 56
-        KINDERGARTENS: 60,  // Детские сады csv 60
+        SALE: 5,           // modified_data (продажа) 58
+        RENT: 7,           // modified_data_rent (аренда) 54
+        SCHOOLS: 3,        // Школы csv 56
+        KINDERGARTENS: 9,  // Детские сады csv 60
         BASEMAP: 19        // OpenStreetMap
-    },
-
-    // Настройки API запросов
-    API_SETTINGS: {
-        MAX_FEATURES: 1000,  // Максимальное количество объектов
-        TIMEOUT: 30000,      // Таймаут запроса
-        RETRY_ATTEMPTS: 3    // Попытки повторного запроса
     },
     
     // Настройки карты
@@ -36,7 +29,6 @@ const CONFIG = {
     }
 
 };
-
 
 
 
