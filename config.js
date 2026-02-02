@@ -32,7 +32,24 @@ const CONFIG = {
     LIST_SETTINGS: {
         ITEMS_PER_PAGE: 50,
         SORT_OPTIONS: ['price_asc', 'price_desc', 'area_asc', 'area_desc']
+    },
+
+const CONFIG = {
+    // ... существующие настройки ...
+    
+    // Настройки списка
+    LIST_SETTINGS: {
+        ITEMS_PER_PAGE: 50,
+        SORT_OPTIONS: ['price_asc', 'price_desc', 'area_asc', 'area_desc']
+    },
+    
+    // Настройки экспорта
+    EXPORT_SETTINGS: {
+        FILENAME_PREFIX: 'Квартиры_',
+        DATE_FORMAT: 'YYYY-MM-DD',
+        SHEET_NAME: 'Квартиры'
     }
+};
 
 };
 

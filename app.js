@@ -27,6 +27,8 @@ class ApartmentFilterApp {
         this.selectedApartment = null;
         this.selectedMarker = null;
         this.highlightedApartments = [];
+
+        this.excelData = []; // Для хранения данных для экспортаs
         
         this.init();
     }
@@ -185,6 +187,12 @@ class ApartmentFilterApp {
         document.getElementById('close-list').addEventListener('click', () => {
             this.toggleListPanel();
         });
+
+        // Кнопка скачивания Excel
+        document.getElementById('download-excel').addEventListener('click', () => {
+            this.downloadExcel();
+        });
+
     }
     
     // Обновление отображения цен в зависимости от масштаба
@@ -845,6 +853,7 @@ class ApartmentFilterApp {
         document.getElementById('results-count').textContent = `Найдено квартир: ${count}`;
     }
 
+    // Обновим метод updateApartmentList для сохранения данных для экспорта
     updateApartmentList() {
         const listContainer = document.getElementById('apartments-list');
         const listCount = document.getElementById('list-count');
@@ -859,7 +868,8 @@ class ApartmentFilterApp {
         const dealType = document.getElementById('deal-type').value;
         let html = '';
         
-        this.filteredApartments.forEach((apartment, index) => {
+        // Сохраняем данные для экспорта
+        this.excelData = this.filteredApartments.map((apartment, index) => {
             const props = apartment.properties;
             const price = dealType === 'sale' ? props.price : props.price_per_month;
             const priceText = dealType === 'sale' ? 
@@ -903,6 +913,14 @@ class ApartmentFilterApp {
                     ${props.url ? `<a href="${props.url}" target="_blank" class="link">Перейти к объявлению</a>` : ''}
                 </div>
             `;
+            
+            return {
+                apartment,
+                price,
+                roomsText,
+                address,
+                priceText
+            };
         });
         
         listContainer.innerHTML = html;
@@ -1055,6 +1073,162 @@ class ApartmentFilterApp {
             maximumFractionDigits: 2
         }).format(price);
     }
+
+    // Метод для скачивания в Excel
+    downloadExcel() {
+        if (this.filteredApartments.length === 0) {
+            alert('Нет данных для экспорта');
+            return;
+        }
+        
+        const dealType = document.getElementById('deal-type').value;
+        const priceLabel = dealType === 'sale' ? 'Цена продажи (млн. руб.)' : 'Цена аренды (руб./мес)';
+        
+        // Подготавливаем данные
+        const excelData = this.filteredApartments.map((apartment, index) => {
+            const props = apartment.properties;
+            const price = dealType === 'sale' ? props.price : props.price_per_month;
+            const pricePerMeter = this.calcPricePerMeterForExcel(price, props.total_meters, dealType);
+            
+            return {
+                '№': index + 1,
+                'Тип сделки': dealType === 'sale' ? 'Продажа' : 'Аренда',
+                [priceLabel]: price,
+                'Цена за м²': pricePerMeter,
+                'Площадь (м²)': props.total_meters,
+                'Комнат': props.rooms_count === -1 ? 'Свободная планировка' : props.rooms_count,
+                'Этаж': `${props.floor}/${props.floors_count}`,
+                'Район': props.district || 'Не указан',
+                'Улица': props.street || '',
+                'Дом': props.house_number || '',
+                'Адрес': `${props.street || ''} ${props.house_number || ''}`.trim(),
+                'Ссылка на объявление': props.url || '',
+                'Широта': apartment.geometry.coordinates[1],
+                'Долгота': apartment.geometry.coordinates[0]
+            };
+        });
+        
+        // Создаем новый рабочий лист
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        
+        // Устанавливаем ширину столбцов
+        const wscols = [
+            { wch: 5 },   // №
+            { wch: 10 },  // Тип сделки
+            { wch: 20 },  // Цена
+            { wch: 15 },  // Цена за м²
+            { wch: 12 },  // Площадь
+            { wch: 12 },  // Комнат
+            { wch: 12 },  // Этаж
+            { wch: 15 },  // Район
+            { wch: 20 },  // Улица
+            { wch: 8 },   // Дом
+            { wch: 25 },  // Адрес
+            { wch: 40 },  // Ссылка
+            { wch: 12 },  // Широта
+            { wch: 12 }   // Долгота
+        ];
+        ws['!cols'] = wscols;
+        
+        // Создаем новую книгу
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Квартиры");
+        
+        // Генерируем дату для имени файла
+        const date = new Date();
+        const dateStr = date.toISOString().split('T')[0];
+        const timeStr = date.toTimeString().split(' ')[0].replace(/:/g, '-');
+        
+        // Сохраняем файл
+        XLSX.writeFile(wb, `Квартиры_${dateStr}_${timeStr}.xlsx`);
+        
+        // Показываем уведомление
+        this.showNotification(`Файл с ${this.filteredApartments.length} квартирами успешно скачан!`);
+    }
+
+    // Вспомогательный метод для расчета цены за м² (для Excel)
+    calcPricePerMeterForExcel(price, area, dealType) {
+        if (!price || !area || area <= 0) return '';
+        
+        const pricePerMeter = price / area;
+        
+        if (dealType === 'sale') {
+            if (pricePerMeter < 1) {
+                return `${(pricePerMeter * 1000).toFixed(0)} тыс./м²`;
+            } else {
+                return `${pricePerMeter.toFixed(2)} млн/м²`;
+            }
+        } else {
+            return `${Math.round(pricePerMeter)} руб./м²`;
+        }
+    }
+
+    // Метод для показа уведомлений
+    showNotification(message) {
+        // Удаляем предыдущее уведомление, если есть
+        const existingNotification = document.querySelector('.excel-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Создаем новое уведомление
+        const notification = document.createElement('div');
+        notification.className = 'excel-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            font-weight: bold;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+            max-width: 300px;
+        `;
+        notification.textContent = message;
+        
+        // Добавляем анимации в CSS, если их нет
+        if (!document.querySelector('#excel-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'excel-notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Автоматическое удаление через 3 секунды
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+
+
 }
 
 // Инициализация приложения после загрузки DOM

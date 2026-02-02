@@ -6,6 +6,7 @@
     <title>Карта квартир - Фильтр</title>
     
     <!-- Leaflet CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <!-- Наши стили -->
@@ -138,9 +139,14 @@
     <script src="config.js"></script>
     <script src="app.js"></script>
 
-    <div id="list-panel" class="list-panel">
+<div id="list-panel" class="list-panel">
     <div class="list-header">
-        <h3>Список квартир (<span id="list-count">0</span>)</h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h3>Список квартир (<span id="list-count">0</span>)</h3>
+            <button id="download-excel" class="download-btn" title="Скачать в Excel">
+                📥
+            </button>
+        </div>
         <button id="close-list" class="close-btn">×</button>
     </div>
     <div id="apartments-list" class="apartments-list">
