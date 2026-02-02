@@ -284,7 +284,6 @@ class ApartmentFilterApp {
                 }
                 
                 if (newCoords) {
-                    console.log(`Использую координаты из свойств для ${layerType}:`, newCoords);
                     return {
                         ...feature,
                         geometry: {
@@ -293,7 +292,6 @@ class ApartmentFilterApp {
                         }
                     };
                 } else {
-                    console.log(`Координаты из свойств недоступны для ${layerType}, использую геометрию:`, feature.geometry.coordinates);
                     return feature;
                 }
             }

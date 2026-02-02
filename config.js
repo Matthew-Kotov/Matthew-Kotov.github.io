@@ -33,9 +33,6 @@ const CONFIG = {
         ITEMS_PER_PAGE: 50,
         SORT_OPTIONS: ['price_asc', 'price_desc', 'area_asc', 'area_desc']
     },
-
-const CONFIG = {
-    // ... существующие настройки ...
     
     // Настройки списка
     LIST_SETTINGS: {
@@ -49,8 +46,6 @@ const CONFIG = {
         DATE_FORMAT: 'YYYY-MM-DD',
         SHEET_NAME: 'Квартиры'
     }
-};
-
 };
 
 
