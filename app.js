@@ -592,15 +592,12 @@ class ApartmentFilterApp {
             const transformedFeatures = geojson.features.map(feature => {
                 if (feature.geometry && feature.geometry.coordinates) {
                     const [x, y] = feature.geometry.coordinates;
-                    // Простая конвертация для демонстрации
-                    const lng = x / 111319.9;
-                    const lat = y / 111319.9;
                     
                     return {
                         ...feature,
                         geometry: {
                             type: 'Point',
-                            coordinates: [lng, lat]
+                            coordinates: [x, y]
                         }
                     };
                 }
@@ -1403,3 +1400,4 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
