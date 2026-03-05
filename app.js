@@ -273,6 +273,8 @@ class ApartmentFilterApp {
                         newCoords = [props.X, props.Y];
                     } else if (props._longitude !== undefined && props._latitude !== undefined) {
                         newCoords = [props._longitude, props._latitude];
+                    } else if (props._longitude_2 !== undefined && props._latitude_2 !== undefined) {
+                        newCoords = [props._longitude_2, props._latitude_2];
                     }
                 }
                 
@@ -588,28 +590,7 @@ class ApartmentFilterApp {
             const geojson = await response.json();
             console.log('Данные остановок получены, количество:', geojson.features ? geojson.features.length : 0);
             
-            // Преобразуем координаты из EPSG:3857 в WGS84
-            const transformedFeatures = geojson.features.map(feature => {
-                console.log(feature.geometry, feature.geometry.coordinates);
-                if (feature.geometry && feature.geometry.coordinates) {
-                    const [x, y] = feature.geometry.coordinates;
-                    console.log(x, y);
-                    
-                    return {
-                        ...feature,
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [x, y]
-                        }
-                    };
-                }
-                return feature;
-            });
-            
-            const transformedGeojson = {
-                ...geojson,
-                features: transformedFeatures
-            };
+            const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'stops');
             
             this.layers.stops = L.geoJSON(transformedGeojson, {
                 pointToLayer: (feature, latlng) => {
@@ -1402,6 +1383,7 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
 
 
 
