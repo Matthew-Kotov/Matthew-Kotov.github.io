@@ -1,4 +1,3 @@
-// app.js - основная логика приложения с поддержкой больниц и остановок
 class ApartmentFilterApp {
     constructor() {
         this.map = null;
@@ -72,7 +71,10 @@ class ApartmentFilterApp {
             if (this.isSettingCustomPoint) {
                 this.setCustomPoint(e.latlng);
                 this.isSettingCustomPoint = false;
-                document.getElementById('set-custom-point').textContent = 'Установить точку на карте';
+                const setPointBtn = document.getElementById('set-custom-point');
+                if (setPointBtn) {
+                    setPointBtn.textContent = 'Установить точку на карте';
+                }
             }
         });
     }
@@ -106,8 +108,10 @@ class ApartmentFilterApp {
         
         this.customPoint = latlng;
         
-        document.getElementById('custom-point-coords').textContent = 
-            `Координаты: ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
+        const coordsEl = document.getElementById('custom-point-coords');
+        if (coordsEl) {
+            coordsEl.textContent = `Координаты: ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
+        }
         
         this.createBufferZone();
         this.applyFilters();
@@ -125,7 +129,10 @@ class ApartmentFilterApp {
         }
         
         this.customPoint = null;
-        document.getElementById('custom-point-coords').textContent = 'Координаты: не установлены';
+        const coordsEl = document.getElementById('custom-point-coords');
+        if (coordsEl) {
+            coordsEl.textContent = 'Координаты: не установлены';
+        }
         
         this.applyFilters();
     }
@@ -137,7 +144,8 @@ class ApartmentFilterApp {
             this.map.removeLayer(this.layers.bufferZone);
         }
         
-        this.bufferRadius = parseInt(document.getElementById('radius').value) || 500;
+        const radiusInput = document.getElementById('radius');
+        this.bufferRadius = radiusInput ? parseInt(radiusInput.value) || 500 : 500;
         
         this.layers.bufferZone = L.circle(this.customPoint, {
             radius: this.bufferRadius,
@@ -149,8 +157,8 @@ class ApartmentFilterApp {
             className: 'buffer-custom'
         });
         
-        const showBuffers = document.getElementById('show-buffers').checked;
-        if (showBuffers) {
+        const showBuffers = document.getElementById('show-buffers');
+        if (showBuffers && showBuffers.checked) {
             this.layers.bufferZone.addTo(this.map);
         }
     }
@@ -163,17 +171,26 @@ class ApartmentFilterApp {
     }
 
     initListPanel() {
-        document.getElementById('show-list-btn').addEventListener('click', () => {
-            this.toggleListPanel();
-        });
+        const showListBtn = document.getElementById('show-list-btn');
+        if (showListBtn) {
+            showListBtn.addEventListener('click', () => {
+                this.toggleListPanel();
+            });
+        }
         
-        document.getElementById('close-list').addEventListener('click', () => {
-            this.toggleListPanel();
-        });
+        const closeList = document.getElementById('close-list');
+        if (closeList) {
+            closeList.addEventListener('click', () => {
+                this.toggleListPanel();
+            });
+        }
 
-        document.getElementById('download-excel').addEventListener('click', () => {
-            this.downloadExcel();
-        });
+        const downloadBtn = document.getElementById('download-excel');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                this.downloadExcel();
+            });
+        }
     }
     
     updatePriceLabels() {
@@ -288,12 +305,14 @@ class ApartmentFilterApp {
             }
             
             const response = await fetch(`data/${fileName}`);
+            console.log('Статус загрузки квартир:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const geojson = await response.json();
+            console.log('Данные квартир получены, количество объектов:', geojson.features ? geojson.features.length : 'нет features');
             
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'apartments');
             
@@ -324,6 +343,9 @@ class ApartmentFilterApp {
             
             if (this.layers.apartments.getBounds().isValid()) {
                 this.map.fitBounds(this.layers.apartments.getBounds());
+                console.log('Карта подстроена под данные квартир');
+            } else {
+                console.log('Невозможно подстроить карту - невалидные границы данных квартир');
             }
             
         } catch (error) {
@@ -334,6 +356,8 @@ class ApartmentFilterApp {
     
     populateDistricts() {
         const districtSelect = document.getElementById('district');
+        if (!districtSelect) return;
+        
         while (districtSelect.children.length > 1) {
             districtSelect.removeChild(districtSelect.lastChild);
         }
@@ -377,12 +401,15 @@ class ApartmentFilterApp {
     async loadSchoolsLayer() {
         try {
             const response = await fetch('data/schools.geojson');
+            console.log('Статус загрузки школ:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const geojson = await response.json();
+            console.log('Данные школ получены, количество:', geojson.features ? geojson.features.length : 0);
+            
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'schools');
             
             this.layers.schools = L.geoJSON(transformedGeojson, {
@@ -421,12 +448,15 @@ class ApartmentFilterApp {
     async loadKindergartensLayer() {
         try {
             const response = await fetch('data/kindergartens.geojson');
+            console.log('Статус загрузки детских садов:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const geojson = await response.json();
+            console.log('Данные детских садов получены, количество:', geojson.features ? geojson.features.length : 0);
+            
             const transformedGeojson = this.useCoordinatesFromProperties(geojson, 'kindergartens');
             
             this.layers.kindergartens = L.geoJSON(transformedGeojson, {
@@ -464,12 +494,14 @@ class ApartmentFilterApp {
     async loadHospitalsLayer() {
         try {
             const response = await fetch('data/hospitals.geojson');
+            console.log('Статус загрузки больниц:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const geojson = await response.json();
+            console.log('Данные больниц получены, количество:', geojson.features ? geojson.features.length : 0);
             
             // Обработка MultiPoint геометрии
             const processedFeatures = [];
@@ -547,19 +579,21 @@ class ApartmentFilterApp {
     async loadStopsLayer() {
         try {
             const response = await fetch('data/stopping_complexes.geojson');
+            console.log('Статус загрузки остановок:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const geojson = await response.json();
+            console.log('Данные остановок получены, количество:', geojson.features ? geojson.features.length : 0);
             
             // Преобразуем координаты из EPSG:3857 в WGS84
             const transformedFeatures = geojson.features.map(feature => {
                 if (feature.geometry && feature.geometry.coordinates) {
                     const [x, y] = feature.geometry.coordinates;
-                    // Простая конвертация (приблизительная)
-                    const lng = x / 111319.9; // Коэффициент для приблизительной конвертации
+                    // Простая конвертация для демонстрации
+                    const lng = x / 111319.9;
                     const lat = y / 111319.9;
                     
                     return {
@@ -660,35 +694,55 @@ class ApartmentFilterApp {
     }
     
     initEventListeners() {
-        document.getElementById('menu-button').addEventListener('click', () => {
-            this.toggleMenu();
-        });
+        const menuButton = document.getElementById('menu-button');
+        if (menuButton) {
+            menuButton.addEventListener('click', () => {
+                this.toggleMenu();
+            });
+        }
         
-        document.getElementById('close-menu').addEventListener('click', () => {
-            this.toggleMenu();
-        });
+        const closeMenu = document.getElementById('close-menu');
+        if (closeMenu) {
+            closeMenu.addEventListener('click', () => {
+                this.toggleMenu();
+            });
+        }
         
-        document.getElementById('apply-filters').addEventListener('click', () => {
-            this.applyFilters();
-        });
+        const applyFilters = document.getElementById('apply-filters');
+        if (applyFilters) {
+            applyFilters.addEventListener('click', () => {
+                this.applyFilters();
+            });
+        }
         
-        document.getElementById('clear-filters').addEventListener('click', () => {
-            this.clearFilters();
-        });
+        const clearFilters = document.getElementById('clear-filters');
+        if (clearFilters) {
+            clearFilters.addEventListener('click', () => {
+                this.clearFilters();
+            });
+        }
         
-        document.getElementById('deal-type').addEventListener('change', (e) => {
-            this.loadApartmentLayer(e.target.value);
-        });
+        const dealType = document.getElementById('deal-type');
+        if (dealType) {
+            dealType.addEventListener('change', (e) => {
+                this.loadApartmentLayer(e.target.value);
+            });
+        }
         
-        document.getElementById('toggle-schools').addEventListener('click', () => {
-            this.toggleLayer('schools');
-        });
+        const toggleSchools = document.getElementById('toggle-schools');
+        if (toggleSchools) {
+            toggleSchools.addEventListener('click', () => {
+                this.toggleLayer('schools');
+            });
+        }
         
-        document.getElementById('toggle-kindergartens').addEventListener('click', () => {
-            this.toggleLayer('kindergartens');
-        });
+        const toggleKindergartens = document.getElementById('toggle-kindergartens');
+        if (toggleKindergartens) {
+            toggleKindergartens.addEventListener('click', () => {
+                this.toggleLayer('kindergartens');
+            });
+        }
         
-        // Добавляем новые кнопки
         const toggleHospitals = document.getElementById('toggle-hospitals');
         if (toggleHospitals) {
             toggleHospitals.addEventListener('click', () => {
@@ -705,35 +759,49 @@ class ApartmentFilterApp {
         
         this.addPriceLabelsButton();
         
-        document.getElementById('show-buffers').addEventListener('change', (e) => {
-            this.onShowBuffersChange(e.target.checked);
-        });
+        const showBuffers = document.getElementById('show-buffers');
+        if (showBuffers) {
+            showBuffers.addEventListener('change', (e) => {
+                this.onShowBuffersChange(e.target.checked);
+            });
+        }
         
-        document.getElementById('set-custom-point').addEventListener('click', () => {
-            this.startSettingCustomPoint();
-        });
+        const setCustomPoint = document.getElementById('set-custom-point');
+        if (setCustomPoint) {
+            setCustomPoint.addEventListener('click', () => {
+                this.startSettingCustomPoint();
+            });
+        }
         
-        document.getElementById('clear-custom-point').addEventListener('click', () => {
-            this.clearCustomPoint();
-        });
+        const clearCustomPoint = document.getElementById('clear-custom-point');
+        if (clearCustomPoint) {
+            clearCustomPoint.addEventListener('click', () => {
+                this.clearCustomPoint();
+            });
+        }
         
-        document.getElementById('radius').addEventListener('change', (e) => {
-            this.onRadiusChange(parseInt(e.target.value) || 500);
-        });
+        const radius = document.getElementById('radius');
+        if (radius) {
+            radius.addEventListener('change', (e) => {
+                this.onRadiusChange(parseInt(e.target.value) || 500);
+            });
+            
+            radius.addEventListener('input', (e) => {
+                this.onRadiusChange(parseInt(e.target.value) || 500);
+            });
+        }
         
-        document.getElementById('radius').addEventListener('input', (e) => {
-            this.onRadiusChange(parseInt(e.target.value) || 500);
-        });
+        const nearbyCondition = document.getElementById('nearby-condition');
+        if (nearbyCondition) {
+            nearbyCondition.addEventListener('change', () => {
+                // Не применяем фильтры сразу, ждем кнопку "Применить"
+            });
+        }
         
-        // Слушатели для новых элементов
         document.querySelectorAll('input[name="nearby"]').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 // Не применяем фильтры сразу, ждем кнопку "Применить"
             });
-        });
-        
-        document.getElementById('nearby-condition').addEventListener('change', () => {
-            // Не применяем фильтры сразу, ждем кнопку "Применить"
         });
     }
     
@@ -757,15 +825,19 @@ class ApartmentFilterApp {
     
     startSettingCustomPoint() {
         this.isSettingCustomPoint = true;
-        document.getElementById('set-custom-point').textContent = 'Кликните на карте для установки точки';
+        const setPointBtn = document.getElementById('set-custom-point');
+        if (setPointBtn) {
+            setPointBtn.textContent = 'Кликните на карте для установки точки';
+        }
         alert('Кликните на карте в нужном месте для установки точки. После установки будут показаны квартиры в указанном радиусе.');
     }
     
     addPriceLabelsButton() {
-        // Проверяем, не добавлена ли уже кнопка
         if (document.getElementById('toggle-priceLabels')) return;
         
         const layerControls = document.querySelector('.layer-controls');
+        if (!layerControls) return;
+        
         const priceButton = document.createElement('button');
         priceButton.id = 'toggle-priceLabels';
         priceButton.className = 'layer-btn active';
@@ -778,11 +850,15 @@ class ApartmentFilterApp {
     
     toggleMenu() {
         const menu = document.getElementById('side-menu');
-        menu.classList.toggle('open');
+        if (menu) {
+            menu.classList.toggle('open');
+        }
     }
 
     toggleListPanel() {
         const listPanel = document.getElementById('list-panel');
+        if (!listPanel) return;
+        
         listPanel.classList.toggle('open');
         this.listPanelOpen = !this.listPanelOpen;
         
@@ -816,10 +892,15 @@ class ApartmentFilterApp {
     }
     
     getCurrentFilters() {
-        const dealType = document.getElementById('deal-type').value;
-        const priceMax = document.getElementById('price-max').value;
-        const areaMin = document.getElementById('area-min').value;
-        const district = document.getElementById('district').value;
+        const dealTypeSelect = document.getElementById('deal-type');
+        const priceMaxInput = document.getElementById('price-max');
+        const areaMinInput = document.getElementById('area-min');
+        const districtSelect = document.getElementById('district');
+        
+        const dealType = dealTypeSelect ? dealTypeSelect.value : 'sale';
+        const priceMax = priceMaxInput ? priceMaxInput.value : '';
+        const areaMin = areaMinInput ? areaMinInput.value : '';
+        const district = districtSelect ? districtSelect.value : '';
         
         const roomCheckboxes = document.querySelectorAll('input[name="rooms"]:checked');
         const selectedRooms = Array.from(roomCheckboxes).map(cb => parseInt(cb.value));
@@ -876,7 +957,8 @@ class ApartmentFilterApp {
         
         if (selectedObjects.length === 0) return;
         
-        const condition = document.getElementById('nearby-condition').value;
+        const conditionSelect = document.getElementById('nearby-condition');
+        const condition = conditionSelect ? conditionSelect.value : 'any';
         const radius = this.bufferRadius;
         
         this.filteredApartments = this.filteredApartments.filter(apartment => {
@@ -912,7 +994,7 @@ class ApartmentFilterApp {
             const distance = apartmentLatLng.distanceTo(layer.getLatLng());
             if (distance <= radius) {
                 isNear = true;
-                return false; // прерываем цикл
+                return false;
             }
         });
         
@@ -924,7 +1006,8 @@ class ApartmentFilterApp {
             this.map.removeLayer(this.layers.apartments);
         }
         
-        const dealType = document.getElementById('deal-type').value;
+        const dealTypeSelect = document.getElementById('deal-type');
+        const dealType = dealTypeSelect ? dealTypeSelect.value : 'sale';
         const style = dealType === 'sale' ? CONFIG.STYLES.SALE : CONFIG.STYLES.RENT;
         
         const filteredGeoJSON = {
@@ -955,12 +1038,17 @@ class ApartmentFilterApp {
     
     updateResultsCount() {
         const count = this.filteredApartments.length;
-        document.getElementById('results-count').textContent = `Найдено квартир: ${count}`;
+        const resultsEl = document.getElementById('results-count');
+        if (resultsEl) {
+            resultsEl.textContent = `Найдено квартир: ${count}`;
+        }
     }
 
     updateApartmentList() {
         const listContainer = document.getElementById('apartments-list');
         const listCount = document.getElementById('list-count');
+        
+        if (!listContainer || !listCount) return;
         
         listCount.textContent = this.filteredApartments.length;
         
@@ -969,7 +1057,8 @@ class ApartmentFilterApp {
             return;
         }
         
-        const dealType = document.getElementById('deal-type').value;
+        const dealTypeSelect = document.getElementById('deal-type');
+        const dealType = dealTypeSelect ? dealTypeSelect.value : 'sale';
         let html = '';
         
         this.excelData = this.filteredApartments.map((apartment, index) => {
@@ -1041,6 +1130,8 @@ class ApartmentFilterApp {
         
         this.selectedApartment = this.filteredApartments[index];
         
+        if (!this.layers.apartments) return;
+        
         this.layers.apartments.eachLayer((layer) => {
             if (layer.feature === this.selectedApartment) {
                 layer.setStyle({
@@ -1081,7 +1172,8 @@ class ApartmentFilterApp {
 
     clearHighlight() {
         if (this.layers.apartments) {
-            const dealType = document.getElementById('deal-type').value;
+            const dealTypeSelect = document.getElementById('deal-type');
+            const dealType = dealTypeSelect ? dealTypeSelect.value : 'sale';
             const style = dealType === 'sale' ? CONFIG.STYLES.SALE : CONFIG.STYLES.RENT;
             
             this.layers.apartments.eachLayer((layer) => {
@@ -1123,10 +1215,15 @@ class ApartmentFilterApp {
     }
 
     clearFilters() {
-        document.getElementById('price-max').value = '';
-        document.getElementById('area-min').value = '';
-        document.getElementById('radius').value = '500';
-        document.getElementById('district').value = '';
+        const priceMax = document.getElementById('price-max');
+        const areaMin = document.getElementById('area-min');
+        const radius = document.getElementById('radius');
+        const district = document.getElementById('district');
+        
+        if (priceMax) priceMax.value = '';
+        if (areaMin) areaMin.value = '';
+        if (radius) radius.value = '500';
+        if (district) district.value = '';
         
         document.querySelectorAll('input[name="rooms"]').forEach(checkbox => {
             checkbox.checked = false;
@@ -1136,8 +1233,11 @@ class ApartmentFilterApp {
             checkbox.checked = false;
         });
         
-        document.getElementById('nearby-condition').value = 'any';
-        document.getElementById('show-buffers').checked = true;
+        const nearbyCondition = document.getElementById('nearby-condition');
+        if (nearbyCondition) nearbyCondition.value = 'any';
+        
+        const showBuffers = document.getElementById('show-buffers');
+        if (showBuffers) showBuffers.checked = true;
         
         this.clearCustomPoint();
         this.clearHighlight();
@@ -1165,7 +1265,8 @@ class ApartmentFilterApp {
             return;
         }
         
-        const dealType = document.getElementById('deal-type').value;
+        const dealTypeSelect = document.getElementById('deal-type');
+        const dealType = dealTypeSelect ? dealTypeSelect.value : 'sale';
         const priceLabel = dealType === 'sale' ? 'Цена продажи (млн. руб.)' : 'Цена аренды (руб./мес)';
         
         const excelData = this.filteredApartments.map((apartment, index) => {
