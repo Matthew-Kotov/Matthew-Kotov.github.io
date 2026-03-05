@@ -7,8 +7,8 @@ const CONFIG = {
         RENT: 7,
         SCHOOLS: 3,
         KINDERGARTENS: 9,
-        HOSPITALS: 10,        // добавьте правильный ID
-        STOPS: 11,             // добавьте правильный ID
+        HOSPITALS: 10,
+        STOPS: 11,
         BASEMAP: 19
     },
     
@@ -24,11 +24,11 @@ const CONFIG = {
     // Стили слоев
     STYLES: {
         SALE: { color: 'blue', radius: 6 },
-        RENT: { color: 'green', radius: 6 },
-        SCHOOLS: { color: 'red', radius: 8 },
-        KINDERGARTENS: { color: 'orange', radius: 8 },
-        HOSPITALS: { color: '#dc3545', radius: 8 },    // красный
-        STOPS: { color: '#6f42c1', radius: 6 },        // фиолетовый
+        RENT: { color: 'blue', radius: 6 },
+        SCHOOLS: { color: 'green', radius: 6 },
+        KINDERGARTENS: { color: 'orange', radius: 6 },
+        HOSPITALS: { color: 'red', radius: 6 },
+        STOPS: { color: 'magenta', radius: 6 },
         BUFFER: { color: 'rgba(0, 0, 255, 0.2)', weight: 2 }
     },
 
@@ -45,3 +45,4 @@ const CONFIG = {
         SHEET_NAME: 'Квартиры'
     }
 };
+
