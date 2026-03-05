@@ -590,8 +590,10 @@ class ApartmentFilterApp {
             
             // Преобразуем координаты из EPSG:3857 в WGS84
             const transformedFeatures = geojson.features.map(feature => {
+                console.log(feature.geometry, feature.geometry.coordinates);
                 if (feature.geometry && feature.geometry.coordinates) {
                     const [x, y] = feature.geometry.coordinates;
+                    console.log(x, y);
                     
                     return {
                         ...feature,
@@ -601,12 +603,15 @@ class ApartmentFilterApp {
                         }
                     };
                 }
+                console.log(feature);
+                
                 return feature;
             });
             
             const transformedGeojson = {
                 ...geojson,
                 features: transformedFeatures
+                console.log(transformedFeatures);
             };
             
             this.layers.stops = L.geoJSON(transformedGeojson, {
@@ -1400,4 +1405,5 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
 
