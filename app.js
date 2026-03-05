@@ -603,15 +603,12 @@ class ApartmentFilterApp {
                         }
                     };
                 }
-                console.log(feature);
-                
                 return feature;
             });
             
             const transformedGeojson = {
                 ...geojson,
                 features: transformedFeatures
-                console.log(transformedFeatures);
             };
             
             this.layers.stops = L.geoJSON(transformedGeojson, {
@@ -1405,5 +1402,6 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
 
 
