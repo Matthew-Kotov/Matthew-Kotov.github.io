@@ -545,7 +545,7 @@ class ApartmentFilterApp {
                 onEachFeature: (feature, layer) => {
                     const props = feature.properties;
                     const name = props.name || 'Не указано';
-                    const type = !isNaN(parseInt(type)) ? 'Медицинское учреждение' : props.type_objec;
+                    const type = !isNaN(parseInt(props.type_objec)) ? 'Медицинское учреждение' : (props.type_objec || '');
                     const address = `${props.street}, ${props.house_numb}`;
                     const phone = props.phone_head || '';
                     
@@ -1381,6 +1381,7 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
 
 
 
