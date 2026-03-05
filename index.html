@@ -19,17 +19,25 @@
     <!-- Панель управления -->
     <div class="control-panel">
         <!-- Кнопки управления слоями -->
-<!-- В control-panel, добавьте новые кнопки -->
-<div class="layer-controls">
-    <button id="toggle-schools" class="layer-btn inactive">🏫 Школы</button>
-    <button id="toggle-kindergartens" class="layer-btn inactive">🏠 Детсады</button>
-    <button id="toggle-hospitals" class="layer-btn inactive">🏥 Больницы</button>
-    <button id="toggle-stops" class="layer-btn inactive">🚏 Остановки</button>
-</div>
-
-	    <button id="show-list-btn" class="menu-button">
-                <span>📋 Список</span>
+        <div class="layer-controls">
+            <button id="toggle-schools" class="layer-btn inactive" data-layer="schools">
+                <span>🏫 Школы</span>
             </button>
+            <button id="toggle-kindergartens" class="layer-btn inactive" data-layer="kindergartens">
+                <span>🏠 Детсады</span>
+            </button>
+            <button id="toggle-hospitals" class="layer-btn inactive" data-layer="hospitals">
+                <span>🏥 Больницы</span>
+            </button>
+            <button id="toggle-stops" class="layer-btn inactive" data-layer="stops">
+                <span>🚏 Остановки</span>
+            </button>
+            <!-- Кнопка для цен добавится динамически -->
+        </div>
+
+        <button id="show-list-btn" class="menu-button">
+            <span>📋 Список</span>
+        </button>
         
         <!-- Кнопка меню фильтров -->
         <button id="menu-button" class="menu-button">
@@ -75,51 +83,51 @@
             </div>
         </div>
         
-        <!-- В боковом меню, обновляем секции: -->
-<div class="form-section">
-    <label>Объекты рядом:</label>
-    <div class="checkbox-group" id="nearby-objects">
-        <label><input type="checkbox" name="nearby" value="schools"> 🏫 Школы</label>
-        <label><input type="checkbox" name="nearby" value="kindergartens"> 🏠 Детские сады</label>
-        <label><input type="checkbox" name="nearby" value="hospitals"> 🏥 Больницы</label>
-        <label><input type="checkbox" name="nearby" value="stops"> 🚏 Остановки</label>
-    </div>
-    <small>Можно выбрать несколько вариантов</small>
-</div>
+        <!-- Новый блок выбора объектов -->
+        <div class="form-section">
+            <label>Объекты рядом:</label>
+            <div class="checkbox-group" id="nearby-objects">
+                <label><input type="checkbox" name="nearby" value="schools"> 🏫 Школы</label>
+                <label><input type="checkbox" name="nearby" value="kindergartens"> 🏠 Детские сады</label>
+                <label><input type="checkbox" name="nearby" value="hospitals"> 🏥 Больницы</label>
+                <label><input type="checkbox" name="nearby" value="stops"> 🚏 Остановки</label>
+            </div>
+            <small>Можно выбрать несколько вариантов</small>
+        </div>
 
-<div class="form-section">
-    <label for="nearby-condition">Условие поиска:</label>
-    <select id="nearby-condition" class="form-control">
-        <option value="any">Хотя бы один из выбранных объектов</option>
-        <option value="all">Все выбранные объекты</option>
-    </select>
-</div>
+        <div class="form-section">
+            <label for="nearby-condition">Условие поиска:</label>
+            <select id="nearby-condition" class="form-control">
+                <option value="any">Хотя бы один из выбранных объектов</option>
+                <option value="all">Все выбранные объекты</option>
+            </select>
+        </div>
 
-<div class="form-section">
-    <label for="radius">Радиус поиска:</label>
-    <input type="number" id="radius" class="form-control" value="500" min="100" max="5000" step="100">
-    <small>метров до выбранных объектов</small>
-</div>
+        <div class="form-section">
+            <label for="radius">Радиус до объекта:</label>
+            <input type="number" id="radius" class="form-control" value="500" min="100" max="5000" step="100">
+            <small>метров (влияет на поиск рядом с выбранными объектами)</small>
+        </div>
 
-<div class="form-section">
-    <label>Произвольная точка:</label>
-    <div class="custom-point-info">
-        <p id="custom-point-coords">Координаты: не установлены</p>
-        <button id="set-custom-point" class="btn btn-secondary" style="margin-top: 5px;">
-            Установить точку на карте
-        </button>
-        <button id="clear-custom-point" class="btn btn-secondary" style="margin-top: 5px;">
-            Очистить точку
-        </button>
-    </div>
-</div>
+        <div class="form-section">
+            <label>Произвольная точка:</label>
+            <div class="custom-point-info">
+                <p id="custom-point-coords">Координаты: не установлены</p>
+                <button id="set-custom-point" class="btn btn-secondary" style="margin-top: 5px;">
+                    Установить точку на карте
+                </button>
+                <button id="clear-custom-point" class="btn btn-secondary" style="margin-top: 5px;">
+                    Очистить точку
+                </button>
+            </div>
+        </div>
 
-<div class="form-section">
-    <label for="show-buffers">
-        <input type="checkbox" id="show-buffers" checked>
-        Показывать буферную зону
-    </label>
-</div>
+        <div class="form-section">
+            <label for="show-buffers">
+                <input type="checkbox" id="show-buffers" checked>
+                Показывать буферную зону
+            </label>
+        </div>
 
         <div class="form-section">
             <label for="district">Район:</label>
@@ -139,20 +147,20 @@
         </div>
     </div>
 
-<div id="list-panel" class="list-panel">
-    <div class="list-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <h3>Список квартир (<span id="list-count">0</span>)</h3>
-            <button id="download-excel" class="download-btn" title="Скачать в Excel">
-                📥
-            </button>
+    <div id="list-panel" class="list-panel">
+        <div class="list-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <h3>Список квартир (<span id="list-count">0</span>)</h3>
+                <button id="download-excel" class="download-btn" title="Скачать в Excel">
+                    📥
+                </button>
+            </div>
+            <button id="close-list" class="close-btn">×</button>
         </div>
-        <button id="close-list" class="close-btn">×</button>
+        <div id="apartments-list" class="apartments-list">
+            <!-- Список будет генерироваться динамически -->
+        </div>
     </div>
-    <div id="apartments-list" class="apartments-list">
-        <!-- Список будет генерироваться динамически -->
-    </div>
-</div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -162,7 +170,4 @@
     <script src="app.js"></script>
 
 </body>
-
 </html>
-
-
