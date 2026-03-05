@@ -531,3 +531,53 @@ small {
     align-items: center;
     gap: 10px;
 }
+
+/* Стили для новых кнопок слоев (если нужно) */
+#toggle-hospitals {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+#toggle-hospitals.active {
+    background: #dc3545;
+    color: white;
+}
+
+#toggle-hospitals.inactive {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+#toggle-stops {
+    border-color: #6f42c1;
+    color: #6f42c1;
+}
+
+#toggle-stops.active {
+    background: #6f42c1;
+    color: white;
+}
+
+#toggle-stops.inactive {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+/* Стили для чекбоксов объектов */
+.form-section .checkbox-group {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.form-section .checkbox-group label {
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.form-section .checkbox-group label:hover {
+    background: #f0f8ff;
+}

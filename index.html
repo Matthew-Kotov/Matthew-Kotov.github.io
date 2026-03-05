@@ -19,15 +19,13 @@
     <!-- Панель управления -->
     <div class="control-panel">
         <!-- Кнопки управления слоями -->
-        <div class="layer-controls">
-            <button id="toggle-schools" class="layer-btn inactive" data-layer="schools">
-                <span>🏫 Школы</span>
-            </button>
-            <button id="toggle-kindergartens" class="layer-btn inactive" data-layer="kindergartens">
-                <span>🏠 Детсады</span>
-            </button>
-            <!-- Кнопка для цен добавится динамически -->
-        </div>
+<!-- В control-panel, добавьте новые кнопки -->
+<div class="layer-controls">
+    <button id="toggle-schools" class="layer-btn inactive">🏫 Школы</button>
+    <button id="toggle-kindergartens" class="layer-btn inactive">🏠 Детсады</button>
+    <button id="toggle-hospitals" class="layer-btn inactive">🏥 Больницы</button>
+    <button id="toggle-stops" class="layer-btn inactive">🚏 Остановки</button>
+</div>
 
 	    <button id="show-list-btn" class="menu-button">
                 <span>📋 Список</span>
@@ -79,19 +77,28 @@
         
         <!-- В боковом меню, обновляем секции: -->
 <div class="form-section">
-    <label for="object-type">Рядом с:</label>
-    <select id="object-type" class="form-control">
-        <option value="none">Не важно</option>
-        <option value="schools">Школы</option>
-        <option value="kindergartens">Детские сады</option>
-        <option value="both">Школы и детские сады</option>
+    <label>Объекты рядом:</label>
+    <div class="checkbox-group" id="nearby-objects">
+        <label><input type="checkbox" name="nearby" value="schools"> 🏫 Школы</label>
+        <label><input type="checkbox" name="nearby" value="kindergartens"> 🏠 Детские сады</label>
+        <label><input type="checkbox" name="nearby" value="hospitals"> 🏥 Больницы</label>
+        <label><input type="checkbox" name="nearby" value="stops"> 🚏 Остановки</label>
+    </div>
+    <small>Можно выбрать несколько вариантов</small>
+</div>
+
+<div class="form-section">
+    <label for="nearby-condition">Условие поиска:</label>
+    <select id="nearby-condition" class="form-control">
+        <option value="any">Хотя бы один из выбранных объектов</option>
+        <option value="all">Все выбранные объекты</option>
     </select>
 </div>
 
 <div class="form-section">
-    <label for="radius">Радиус до объекта:</label>
-    <input type="number" id="radius" class="form-control" value="500">
-    <small>метров (влияет на поиск рядом с выбранными объектами)</small>
+    <label for="radius">Радиус поиска:</label>
+    <input type="number" id="radius" class="form-control" value="500" min="100" max="5000" step="100">
+    <small>метров до выбранных объектов</small>
 </div>
 
 <div class="form-section">
