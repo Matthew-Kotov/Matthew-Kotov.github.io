@@ -1,18 +1,5 @@
 // config.js - настройки приложения
 const CONFIG = {
-    // Настройки NextGIS Web
-    NGW_URL: 'https://apartmentfilter.nextgis.com',
-    LAYER_IDS: {
-        SALE: 5,
-        RENT: 7,
-        SCHOOLS: 3,
-        KINDERGARTENS: 9,
-        HOSPITALS: 10,
-        STOPS: 11,
-        BASEMAP: 19
-    },
-    
-    // Настройки карты
     MAP_CENTER: [47.2313, 39.7233],
     MAP_ZOOM: 12,
 
@@ -45,4 +32,5 @@ const CONFIG = {
         SHEET_NAME: 'Квартиры'
     }
 };
+
 
