@@ -544,12 +544,10 @@ class ApartmentFilterApp {
                 },
                 onEachFeature: (feature, layer) => {
                     const props = feature.properties;
-                    const name = props.name || props.full_name || props.name_2 || props.full_name_2 || 'Не указано';
-                    const type = props.type_objec || props.type_objec_2 || 'Медицинское учреждение';
-                    const address = props.street && props.house_numb ? 
-                        `${props.street}, ${props.house_numb}` : 
-                        props.address || 'Не указан';
-                    const phone = props.phone_head || props.phone_head_2 || '';
+                    const name = props.name || 'Не указано';
+                    const type = Number.isInteger(props.type_objec) ? 'Медицинское учреждение' || props.type_objec;
+                    const address = `${props.street}, ${props.house_numb}`;
+                    const phone = props.phone_head || '';
                     
                     let popupContent = `
                         <div class="popup-content">
@@ -563,8 +561,8 @@ class ApartmentFilterApp {
                         popupContent += `<p><strong>Телефон:</strong> ${phone}</p>`;
                     }
                     
-                    if (props.mode || props.mode_2) {
-                        popupContent += `<p><strong>Режим работы:</strong> ${props.mode || props.mode_2}</p>`;
+                    if (props.mode) {
+                        popupContent += `<p><strong>Режим работы:</strong> ${props.mode}</p>`;
                     }
                     
                     popupContent += `</div>`;
@@ -580,7 +578,7 @@ class ApartmentFilterApp {
 
     async loadStopsLayer() {
         try {
-            const response = await fetch('data/stopping_complexes.geojson');
+            const response = await fetch('data/stops.geojson');
             console.log('Статус загрузки остановок:', response.status);
             
             if (!response.ok) {
@@ -605,7 +603,7 @@ class ApartmentFilterApp {
                 },
                 onEachFeature: (feature, layer) => {
                     const props = feature.properties;
-                    const name = props.full_name || props.name || 'Не указано';
+                    const name = props.full_name || 'Не указано';
                     const bus = props.bus || props.trolleybus || props.tram || '';
                     
                     let popupContent = `
@@ -1383,3 +1381,4 @@ class ApartmentFilterApp {
 document.addEventListener('DOMContentLoaded', () => {
     new ApartmentFilterApp();
 });
+
