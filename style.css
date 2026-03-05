@@ -253,7 +253,6 @@ small {
     }
 }
 
-/* Стили для маркеров с ценами - УЛУЧШЕННАЯ ЧИТАЕМОСТЬ */
 .price-marker {
     background: #ffffff;
     border: 2px solid;
@@ -276,14 +275,14 @@ small {
 }
 
 .price-marker.sale {
-    border-color: #0050c8; /* Ещё более насыщенный синий */
+    border-color: #0050c8; 
     color: #003d99;
     background: linear-gradient(135deg, #e3f2fd, #ffffff);
     box-shadow: 0 4px 8px rgba(0, 80, 200, 0.3);
 }
 
 .price-marker.rent {
-    border-color: #1a9031; /* Ещё более насыщенный зеленый */
+    border-color: #1a9031;
     color: #147a26;
     background: linear-gradient(135deg, #e8f5e8, #ffffff);
     box-shadow: 0 4px 8px rgba(26, 144, 49, 0.3);
@@ -306,7 +305,6 @@ small {
     z-index: 600 !important;
 }
 
-/* Стили для буферных зон */
 .buffer-zone {
     stroke: true;
     fill: true;
@@ -484,8 +482,6 @@ small {
         grid-template-columns: 1fr;
     }
 }
-
-/* Маркер для подсветки выбранной квартиры на карте */
 .selected-apartment-marker {
     background: #ff9800;
     border: 3px solid white;
@@ -523,7 +519,6 @@ small {
     transform: translateY(0);
 }
 
-/* Обновляем стили заголовка списка для размещения кнопки */
 .list-header h3 {
     margin: 0;
     font-size: 18px;
@@ -532,38 +527,6 @@ small {
     gap: 10px;
 }
 
-/* Стили для новых кнопок слоев (если нужно) */
-#toggle-hospitals {
-    border-color: #dc3545;
-    color: #dc3545;
-}
-
-#toggle-hospitals.active {
-    background: #dc3545;
-    color: white;
-}
-
-#toggle-hospitals.inactive {
-    border-color: #6c757d;
-    color: #6c757d;
-}
-
-#toggle-stops {
-    border-color: #6f42c1;
-    color: #6f42c1;
-}
-
-#toggle-stops.active {
-    background: #6f42c1;
-    color: white;
-}
-
-#toggle-stops.inactive {
-    border-color: #6c757d;
-    color: #6c757d;
-}
-
-/* Стили для чекбоксов объектов */
 .form-section .checkbox-group {
     max-height: 200px;
     overflow-y: auto;
@@ -580,4 +543,5 @@ small {
 
 .form-section .checkbox-group label:hover {
     background: #f0f8ff;
+
 }
