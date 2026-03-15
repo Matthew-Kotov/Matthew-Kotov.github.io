@@ -768,13 +768,26 @@ class ApartmentFilterApp {
                 this.onRadiusChange(parseInt(e.target.value) || 500);
             });
         }
-        
-        const nearbyCondition = document.getElementById('nearby-condition');
-        if (nearbyCondition) {
-            nearbyCondition.addEventListener('change', () => {
-                // Не применяем фильтры сразу, ждем кнопку "Применить"
-            });
-        }
+
+        // Добавьте в конец метода initEventListeners()
+
+const checkAllNearby = document.getElementById('check-all-nearby');
+if (checkAllNearby) {
+    checkAllNearby.addEventListener('click', () => {
+        document.querySelectorAll('input[name="nearby"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    });
+}
+
+const uncheckAllNearby = document.getElementById('uncheck-all-nearby');
+if (uncheckAllNearby) {
+    uncheckAllNearby.addEventListener('click', () => {
+        document.querySelectorAll('input[name="nearby"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    });
+}
         
         document.querySelectorAll('input[name="nearby"]').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
@@ -928,32 +941,25 @@ class ApartmentFilterApp {
         });
     }
     
-    applyObjectFilter() {
-        const selectedObjects = Array.from(
-            document.querySelectorAll('input[name="nearby"]:checked')
-        ).map(cb => cb.value);
+applyObjectFilter() {
+    const selectedObjects = Array.from(
+        document.querySelectorAll('input[name="nearby"]:checked')
+    ).map(cb => cb.value);
+    
+    if (selectedObjects.length === 0) return;
+    
+    const radius = this.bufferRadius;
+    
+    this.filteredApartments = this.filteredApartments.filter(apartment => {
+        const apartmentPoint = apartment.geometry.coordinates;
         
-        if (selectedObjects.length === 0) return;
-        
-        const conditionSelect = document.getElementById('nearby-condition');
-        const condition = conditionSelect ? conditionSelect.value : 'any';
-        const radius = this.bufferRadius;
-        
-        this.filteredApartments = this.filteredApartments.filter(apartment => {
-            const apartmentPoint = apartment.geometry.coordinates;
-            
-            const results = selectedObjects.map(type => {
-                const layer = this.layers[type];
-                return layer ? this.isNearObjects(apartmentPoint, layer, radius) : false;
-            });
-            
-            if (condition === 'any') {
-                return results.some(result => result === true);
-            } else {
-                return results.every(result => result === true);
-            }
+        // Проверяем, есть ли рядом ХОТЯ БЫ ОДИН из выбранных объектов
+        return selectedObjects.some(type => {
+            const layer = this.layers[type];
+            return layer ? this.isNearObjects(apartmentPoint, layer, radius) : false;
         });
-    }
+    });
+}
     
     isPointInRadius(apartmentCoords, centerPoint, radius) {
         const [lng, lat] = apartmentCoords;
@@ -1210,9 +1216,6 @@ class ApartmentFilterApp {
         document.querySelectorAll('input[name="nearby"]').forEach(checkbox => {
             checkbox.checked = false;
         });
-        
-        const nearbyCondition = document.getElementById('nearby-condition');
-        if (nearbyCondition) nearbyCondition.value = 'any';
         
         const showBuffers = document.getElementById('show-buffers');
         if (showBuffers) showBuffers.checked = true;
