@@ -83,25 +83,20 @@
             </div>
         </div>
         
-        <!-- Новый блок выбора объектов -->
-        <div class="form-section">
-            <label>Объекты рядом:</label>
-            <div class="checkbox-group" id="nearby-objects">
-                <label><input type="checkbox" name="nearby" value="schools"> 🏫 Школы</label>
-                <label><input type="checkbox" name="nearby" value="kindergartens"> 🏠 Детские сады</label>
-                <label><input type="checkbox" name="nearby" value="hospitals"> 🏥 Больницы</label>
-                <label><input type="checkbox" name="nearby" value="stops"> 🚏 Остановки</label>
-            </div>
-            <small>Можно выбрать несколько вариантов</small>
-        </div>
-
-        <div class="form-section">
-            <label for="nearby-condition">Условие поиска:</label>
-            <select id="nearby-condition" class="form-control">
-                <option value="any">Хотя бы один из выбранных объектов</option>
-                <option value="all">Все выбранные объекты</option>
-            </select>
-        </div>
+<div class="form-section">
+    <label>Объекты рядом:</label>
+    <div class="checkbox-group" id="nearby-objects">
+        <label><input type="checkbox" name="nearby" value="schools"> 🏫 Школы</label>
+        <label><input type="checkbox" name="nearby" value="kindergartens"> 🏠 Детские сады</label>
+        <label><input type="checkbox" name="nearby" value="hospitals"> 🏥 Больницы</label>
+        <label><input type="checkbox" name="nearby" value="stops"> 🚏 Остановки</label>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 8px;">
+        <button type="button" id="check-all-nearby" class="btn btn-secondary" style="flex: 1;">✅ Выбрать все</button>
+        <button type="button" id="uncheck-all-nearby" class="btn btn-secondary" style="flex: 1;">❌ Снять все</button>
+    </div>
+    <small>Можно выбрать несколько вариантов. Используйте кнопки для быстрого выбора.</small>
+</div>
 
         <div class="form-section">
             <label for="radius">Радиус до объекта:</label>
