@@ -769,8 +769,6 @@ class ApartmentFilterApp {
             });
         }
 
-        // Добавьте в конец метода initEventListeners()
-
 const checkAllNearby = document.getElementById('check-all-nearby');
 if (checkAllNearby) {
     checkAllNearby.addEventListener('click', () => {
@@ -858,29 +856,32 @@ if (uncheckAllNearby) {
         }
     }
     
-    applyFilters() {
-        const filters = this.getCurrentFilters();
-        this.filterApartments(filters);
-        
-        if (this.customPoint) {
-            this.applyRadiusFilter();
-        } else {
-            const selectedObjects = document.querySelectorAll('input[name="nearby"]:checked');
-            if (selectedObjects.length > 0) {
-                this.applyObjectFilter();
-            }
+applyFilters() {
+    const filters = this.getCurrentFilters();
+    this.filterApartments(filters);
+    
+    // Применяем фильтр по произвольной точке, если она установлена
+    if (this.customPoint) {
+        this.applyRadiusFilter();
+    } 
+    // Если есть выбранные объекты рядом, применяем фильтр "все объекты"
+    else {
+        const selectedObjects = document.querySelectorAll('input[name="nearby"]:checked');
+        if (selectedObjects.length > 0) {
+            this.applyObjectFilter();
         }
-
-        this.clearHighlight();
-        
-        if (this.listPanelOpen) {
-            this.updateApartmentList();
-        }
-        
-        this.updateMap();
-        this.updateResultsCount();
-        this.updatePriceLabels();
     }
+
+    this.clearHighlight();
+    
+    if (this.listPanelOpen) {
+        this.updateApartmentList();
+    }
+    
+    this.updateMap();
+    this.updateResultsCount();
+    this.updatePriceLabels();
+}
     
     getCurrentFilters() {
         const dealTypeSelect = document.getElementById('deal-type');
@@ -953,8 +954,8 @@ applyObjectFilter() {
     this.filteredApartments = this.filteredApartments.filter(apartment => {
         const apartmentPoint = apartment.geometry.coordinates;
         
-        // Проверяем, есть ли рядом ХОТЯ БЫ ОДИН из выбранных объектов
-        return selectedObjects.some(type => {
+        // Проверяем, что рядом есть ВСЕ выбранные объекты
+        return selectedObjects.every(type => {
             const layer = this.layers[type];
             return layer ? this.isNearObjects(apartmentPoint, layer, radius) : false;
         });
