@@ -254,6 +254,9 @@ small {
 }
 
 .price-marker {
+    display: flex;           /* Включаем flex-контейнер */
+    align-items: center;     /* Вертикальное центрирование */
+    justify-content: center;
     background: #ffffff;
     border: 2px solid;
     border-radius: 14px;
