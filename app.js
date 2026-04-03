@@ -237,7 +237,7 @@ class ApartmentFilterApp {
                 priceText = isCompact ? `${thousands}т` : `${this.formatPrice(price, 0)} руб`;
             } else {
                 const thousands = Math.round(price / 1000);
-                priceText = isCompact ? `${thousands}т` : `${thousands} тыс. руб`;
+                priceText = isCompact ? `${thousands}т` : `${thousands} тыс. руб.`;
             }
         }
         
@@ -1190,7 +1190,7 @@ applyObjectFilter() {
         
         if (dealType === 'sale') {
             if (pricePerMeter < 1) {
-                return `${(pricePerMeter * 1000).toFixed(0)} тыс./м²`;
+                return `${(pricePerMeter * 1000).toFixed(0)} т.р./м²`;
             } else {
                 return `${pricePerMeter.toFixed(2)} млн/м²`;
             }
