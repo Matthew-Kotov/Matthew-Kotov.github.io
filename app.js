@@ -244,7 +244,7 @@ class ApartmentFilterApp {
         const labelDiv = L.divIcon({
             className: `price-marker ${dealType} ${isCompact ? 'compact' : ''}`,
             html: `<div style="font-weight: 800;">${priceText}</div>`,
-            iconSize: [isCompact ? 45 : 55, isCompact ? 22 : 26],
+            // iconSize: [isCompact ? 45 : 55, isCompact ? 22 : 26],
             iconAnchor: [isCompact ? 22 : 27, isCompact ? 26 : 30]
         });
         
