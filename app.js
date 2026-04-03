@@ -241,11 +241,27 @@ class ApartmentFilterApp {
             }
         }
         
+            // Создаём временный элемент для измерения
+        const tempDiv = document.createElement('div');
+        tempDiv.className = `price-marker ${dealType} ${isCompact ? 'compact' : ''}`;
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.whiteSpace = 'nowrap';
+        tempDiv.innerHTML = `<div style="font-weight: 800;">${priceText}</div>`;
+        document.body.appendChild(tempDiv);
+        
+        // Читаем реальные размеры из CSS
+        const width = tempDiv.offsetWidth;
+        const height = tempDiv.offsetHeight;
+        
+        // Удаляем временный элемент
+        document.body.removeChild(tempDiv);
+        
         const labelDiv = L.divIcon({
             className: `price-marker ${dealType} ${isCompact ? 'compact' : ''}`,
             html: `<div style="font-weight: 800;">${priceText}</div>`,
-            // iconSize: [isCompact ? 45 : 55, isCompact ? 22 : 26],
-            iconAnchor: [isCompact ? 22 : 27, isCompact ? 26 : 30]
+            iconSize: [width, height],
+            iconAnchor: [width / 2, height + 4]
         });
         
         return L.marker([lat, lng], {
