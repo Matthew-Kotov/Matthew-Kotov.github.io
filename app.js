@@ -225,7 +225,7 @@ class ApartmentFilterApp {
         
         if (dealType === 'sale') {
             if (price < 1) {
-                priceText = isCompact ? `${(price * 1000).toFixed(0)}т` : `${this.formatPrice(price)} млн`;
+                priceText = isCompact ? `${(price * 1000).toFixed(0)}т.` : `${this.formatPrice(price)} млн`;
             } else {
                 priceText = isCompact ? `${price.toFixed(1)}м` : `${this.formatPrice(price)} млн`;
             }
@@ -234,10 +234,10 @@ class ApartmentFilterApp {
                 priceText = isCompact ? `${price}р` : `${this.formatPrice(price, 0)} руб`;
             } else if (price < 10000) {
                 const thousands = (price / 1000).toFixed(1);
-                priceText = isCompact ? `${thousands}т` : `${this.formatPrice(price, 0)} руб`;
+                priceText = isCompact ? `${thousands}т.` : `${this.formatPrice(price, 0)} руб`;
             } else {
                 const thousands = Math.round(price / 1000);
-                priceText = isCompact ? `${thousands}т` : `${thousands} тыс. руб.`;
+                priceText = isCompact ? `${thousands}т.` : `${thousands} тыс. руб.`;
             }
         }
         
